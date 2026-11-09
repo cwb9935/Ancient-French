@@ -1,0 +1,325 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    --font-serif: 'Cinzel', 'Fraunces', serif;
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: #faf8f5;
+    color: #1e293b;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+.font-medieval {
+  font-family: 'Cinzel', serif;
+}
+
+.font-parchment {
+  font-family: 'Fraunces', serif;
+}
+
+/* Duolingo-style 3D tactile buttons */
+.duo-btn-green {
+  background-color: #58cc02;
+  border-bottom: 4px solid #46a302;
+  transition: all 0.1s ease;
+}
+.duo-btn-green:hover:not(:disabled) {
+  background-color: #61e002;
+}
+.duo-btn-green:active:not(:disabled) {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.duo-btn-primary {
+  background-color: #2563eb;
+  border-bottom: 4px solid #1d4ed8;
+  transition: all 0.1s ease;
+}
+.duo-btn-primary:active:not(:disabled) {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.duo-btn-gold {
+  background-color: #eab308;
+  border-bottom: 4px solid #ca8a04;
+  transition: all 0.1s ease;
+}
+.duo-btn-gold:active:not(:disabled) {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.duo-btn-card {
+  border: 2px solid #e2e8f0;
+  border-bottom: 4px solid #cbd5e1;
+  background-color: #ffffff;
+  transition: all 0.1s ease;
+}
+.duo-btn-card:hover {
+  border-color: #94a3b8;
+  background-color: #f8fafc;
+}
+.duo-btn-card.selected {
+  border-color: #3b82f6;
+  border-bottom: 4px solid #2563eb;
+  background-color: #eff6ff;
+}
+.duo-btn-card:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+/* Custom scrollbar for manuscript reading */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ============================================================================
+   Author Gallery: Floating Puzzle Shards & 5-Shard Redraw Illumination Effects
+   ============================================================================ */
+
+@keyframes shardFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg) scale(1);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25), inset 0 0 12px rgba(251, 191, 36, 0.2);
+  }
+  50% {
+    transform: translateY(-6px) rotate(1.2deg) scale(1.025);
+    box-shadow: 0 12px 22px rgba(245, 158, 11, 0.45), inset 0 0 18px rgba(253, 224, 71, 0.35);
+  }
+}
+
+@keyframes shardFloatAlt {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg) scale(1);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25), inset 0 0 12px rgba(251, 191, 36, 0.2);
+  }
+  50% {
+    transform: translateY(-5px) rotate(-1.2deg) scale(1.025);
+    box-shadow: 0 12px 22px rgba(245, 158, 11, 0.45), inset 0 0 18px rgba(253, 224, 71, 0.35);
+  }
+}
+
+@keyframes shardShimmerSweep {
+  0% {
+    transform: translateX(-140%) skewX(-20deg);
+  }
+  45%, 100% {
+    transform: translateX(220%) skewX(-20deg);
+  }
+}
+
+.animate-shard-float-1 {
+  animation: shardFloat 3.2s ease-in-out infinite;
+}
+.animate-shard-float-2 {
+  animation: shardFloatAlt 3.5s ease-in-out 0.4s infinite;
+}
+.animate-shard-float-3 {
+  animation: shardFloat 3.8s ease-in-out 0.8s infinite;
+}
+.animate-shard-float-4 {
+  animation: shardFloatAlt 3.4s ease-in-out 1.2s infinite;
+}
+.animate-shard-float-5 {
+  animation: shardFloat 3.6s ease-in-out 1.6s infinite;
+}
+
+.shard-gilded-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.shard-gilded-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 45%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(253, 224, 71, 0.35) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shardShimmerSweep 4.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* 5-Shard Convergence & Manuscript Illumination "Redraw" Transition */
+@keyframes portraitRedraw {
+  0% {
+    filter: grayscale(1) sepia(0.95) contrast(1.85) brightness(1.25) blur(3px);
+    transform: scale(1.06);
+  }
+  35% {
+    filter: grayscale(0.4) sepia(0.75) contrast(1.45) brightness(1.18) blur(0.5px);
+    transform: scale(1.03);
+  }
+  75% {
+    filter: grayscale(0) sepia(0.25) contrast(1.12) brightness(1.08) blur(0px);
+    transform: scale(1.01);
+  }
+  100% {
+    filter: grayscale(0) sepia(0) contrast(1) brightness(1) blur(0px);
+    transform: scale(1);
+  }
+}
+
+@keyframes redrawQuillSweep {
+  0% {
+    top: -12%;
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    top: 108%;
+    opacity: 0;
+  }
+}
+
+@keyframes shardConverge1 {
+  0% {
+    transform: translate(-28px, -24px) rotate(-8deg) scale(0.82);
+    opacity: 0.95;
+  }
+  55% {
+    transform: translate(0px, 0px) rotate(0deg) scale(1.02);
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes shardConverge2 {
+  0% {
+    transform: translate(0px, -30px) rotate(5deg) scale(0.82);
+    opacity: 0.95;
+  }
+  55% {
+    transform: translate(0px, 0px) rotate(0deg) scale(1.02);
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes shardConverge3 {
+  0% {
+    transform: translate(28px, -24px) rotate(9deg) scale(0.82);
+    opacity: 0.95;
+  }
+  55% {
+    transform: translate(0px, 0px) rotate(0deg) scale(1.02);
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes shardConverge4 {
+  0% {
+    transform: translate(-28px, 26px) rotate(7deg) scale(0.82);
+    opacity: 0.95;
+  }
+  55% {
+    transform: translate(0px, 0px) rotate(0deg) scale(1.02);
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes shardConverge5 {
+  0% {
+    transform: translate(24px, 26px) rotate(-6deg) scale(0.82);
+    opacity: 0.95;
+  }
+  55% {
+    transform: translate(0px, 0px) rotate(0deg) scale(1.02);
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes redrawAuraBurst {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.08);
+  }
+}
+
+.animate-portrait-redraw {
+  animation: portraitRedraw 2.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.animate-quill-sweep {
+  animation: redrawQuillSweep 1.9s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-shard-converge-1 {
+  animation: shardConverge1 1.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.animate-shard-converge-2 {
+  animation: shardConverge2 1.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.animate-shard-converge-3 {
+  animation: shardConverge3 1.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.animate-shard-converge-4 {
+  animation: shardConverge4 1.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.animate-shard-converge-5 {
+  animation: shardConverge5 1.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.animate-redraw-aura {
+  animation: redrawAuraBurst 2.1s ease-out forwards;
+}
+

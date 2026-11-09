@@ -1,0 +1,8 @@
+{
+  "name": "Remix 古法语学堂 (Ancien Français Duo)",
+  "description": "依据 Laurence Hélix 教材体系设计，循序渐进的古法语移动学习应用，包含多邻国风格每日打卡闯关、变格变位查询、闪卡背单词以、知名作家简介。",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
