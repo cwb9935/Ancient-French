@@ -8,6 +8,7 @@ import { Lesson, UserProgress, DailyQuest, ShardDropResult, Language } from './t
 import { 
   loadUserProgress, 
   saveUserProgress, 
+  resetUserProgress,
   getTodayString, 
   getDailyQuests,
   getRankByXp,
@@ -25,6 +26,7 @@ import { FlashcardsView } from './components/FlashcardsView';
 import { LibraryGalleryView } from './components/LibraryGalleryView';
 import { RabbitWardrobeModal } from './components/RabbitWardrobeModal';
 import { ShardDropModal } from './components/ShardDropModal';
+import { GrandFinaleModal } from './components/GrandFinaleModal';
 import { ProfileView } from './components/ProfileView';
 
 export default function App() {
@@ -33,6 +35,7 @@ export default function App() {
   const [activeLesson, setActiveLesson] = useState<Lesson | null>(null);
   const [showCheckinModal, setShowCheckinModal] = useState<boolean>(false);
   const [showWardrobeModal, setShowWardrobeModal] = useState<boolean>(false);
+  const [showGrandFinaleModal, setShowGrandFinaleModal] = useState<boolean>(false);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [notification, setNotification] = useState<{ title: string; desc: string } | null>(null);
 
@@ -134,6 +137,14 @@ export default function App() {
       }
     }
 
+    // Check if the user has now completed ALL lessons across all 18 units for the first time
+    const allCourseLessonIds = localizedUnits.flatMap((u) => u.lessons.map((l) => l.id));
+    const isAllCourseDone =
+      allCourseLessonIds.length > 0 &&
+      allCourseLessonIds.every((id) => newCompleted.includes(id));
+    const isFirstTimeGrandCompletion =
+      isAllCourseDone && !updatedProgress.hasSeenGrandCompletion;
+
     const nextState: UserProgress = {
       ...updatedProgress,
       xp: finalXp,
@@ -143,13 +154,17 @@ export default function App() {
       unlockedUnits: newUnlocked,
       rankTitle: rank.title,
       rankLevel: rank.level,
+      hasSeenGrandCompletion:
+        updatedProgress.hasSeenGrandCompletion || isFirstTimeGrandCompletion,
     };
 
     setProgress(nextState);
     setActiveLesson(null);
 
-    // Show shard drop rewards modal
-    if (drops.length > 0) {
+    if (isFirstTimeGrandCompletion) {
+      setShowGrandFinaleModal(true);
+    } else if (drops.length > 0) {
+      // Show shard drop rewards modal
       setDroppedShards(drops);
       setDropReasonTitle(
         isZh ? `研习完成：${activeLesson.title}` : `Lesson Complete: ${activeLesson.title}`
@@ -336,6 +351,21 @@ export default function App() {
     });
   };
 
+  // Reset all learning progress
+  const handleResetProgress = () => {
+    const freshState = resetUserProgress(lang);
+    setProgress(freshState);
+    setActiveLesson(null);
+    setDroppedShards([]);
+    setShowShardModal(false);
+    showToast(
+      isZh ? '学习进度已全部重置' : 'All Learning Progress Reset',
+      isZh
+        ? '所有课程记录、经验、连胜与碎片已清零，欢迎重新踏上古法语修行之路！'
+        : 'All lessons, XP, streaks, and shards have been cleared. Welcome to a fresh start!'
+    );
+  };
+
   const dailyQuests = getDailyQuests(progress, lang);
 
   return (
@@ -416,6 +446,7 @@ export default function App() {
               onOpenWardrobe={() => setShowWardrobeModal(true)}
               onOpenGallery={() => setCurrentTab('library')}
               onChangeLanguage={handleChangeLanguage}
+              onResetProgress={handleResetProgress}
             />
           )}
         </main>
@@ -462,6 +493,17 @@ export default function App() {
             lang={lang}
           />
         )}
+
+        {/* Grand Finale Celebration Modal (First time completing all 18 units) */}
+        <GrandFinaleModal
+          isOpen={showGrandFinaleModal}
+          onClose={() => setShowGrandFinaleModal(false)}
+          onGoToLibrary={() => {
+            setShowGrandFinaleModal(false);
+            setCurrentTab('library');
+          }}
+          lang={lang}
+        />
       </div>
     </div>
   );

@@ -171,6 +171,46 @@ export function saveUserProgress(progress: UserProgress): void {
   }
 }
 
+export function createFreshUserProgress(lang: Language = 'en'): UserProgress {
+  const rank = getRankByXp(0, lang);
+  return {
+    language: lang,
+    streak: 0,
+    lastCheckinDate: '',
+    historyCheckins: [],
+    xp: 0,
+    totalCorrect: 0,
+    totalAnswered: 0,
+    completedLessons: [],
+    unlockedUnits: ['unit-1'],
+    claimedMilestones: [],
+    claimedQuests: [],
+    bookmarkedWords: [],
+    mistakeHistory: [],
+    rankTitle: rank.title,
+    rankLevel: rank.level,
+    dailyWordsReviewed: 0,
+    dailyWordGoal: 10,
+    learnedWordIds: [],
+    manuscriptReadSeconds: 0,
+    activeRabbitSkinId: 'rabbit-scribe',
+    rabbitShards: {
+      'rabbit-scribe': 5,
+    },
+    unlockedSkins: ['rabbit-scribe'],
+    authorShards: {},
+    unlockedAuthors: [],
+    hasSeenGrandCompletion: false,
+  };
+}
+
+export function resetUserProgress(lang: Language = 'en'): UserProgress {
+  const fresh = createFreshUserProgress(lang);
+  saveUserProgress(fresh);
+  return fresh;
+}
+
+
 /**
  * Rolls random shard drop rewards for completing daily quests or lessons.
  * Prioritizes locked skins/authors so user progresses reliably.

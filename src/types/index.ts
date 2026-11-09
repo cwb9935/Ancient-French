@@ -152,6 +152,9 @@ export interface UserProgress {
   // Medieval Author Gallery Shards
   authorShards: Record<string, number>; // authorId -> shards (0 to 5)
   unlockedAuthors: string[]; // list of unlocked author ids
+
+  // Grand finale celebration flag (triggered the first time all 18 units are completed)
+  hasSeenGrandCompletion?: boolean;
 }
 
 export interface DailyQuest {

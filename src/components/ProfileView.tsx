@@ -3,14 +3,17 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Flame, 
   Sparkles, 
   ChevronRight,
   Feather,
   Globe,
-  Check
+  Check,
+  RotateCcw,
+  AlertTriangle,
+  Trash2
 } from 'lucide-react';
 import { UserProgress, DailyQuest, Language } from '../types';
 import { getRanks } from '../utils/storage';
@@ -25,6 +28,7 @@ interface ProfileViewProps {
   onOpenWardrobe: () => void;
   onOpenGallery: () => void;
   onChangeLanguage?: (lang: Language) => void;
+  onResetProgress?: () => void;
 }
 
 export const ProfileView: React.FC<ProfileViewProps> = ({
@@ -34,7 +38,9 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   onOpenWardrobe,
   onOpenGallery,
   onChangeLanguage,
+  onResetProgress,
 }) => {
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
   const lang = progress.language || 'en';
   const isZh = lang === 'zh';
 
@@ -406,6 +412,118 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           ))}
         </div>
       </div>
+
+      {/* Reset Learning Progress Card */}
+      <div className="bg-white rounded-3xl p-4 border border-rose-200/80 shadow-2xs">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-start gap-2.5">
+            <div className="p-2 rounded-xl bg-rose-50 text-rose-600 border border-rose-200/60 shrink-0 mt-0.5">
+              <RotateCcw className="w-4 h-4" />
+            </div>
+            <div>
+              <h3 className="text-xs font-bold text-stone-900 font-serif">
+                {isZh ? '清除学习进度 · 重新开始' : 'Reset Learning Progress'}
+              </h3>
+              <p className="text-[11px] text-stone-500 mt-0.5 leading-relaxed">
+                {isZh
+                  ? '一键格式化所有闯关记录、骑士经验、连胜天数、已背单词与收集碎片，从零开启修行。'
+                  : 'Format all completed lessons, XP, streak days, flashcards, and collected shards to start fresh from zero.'}
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => {
+              sound.playClick();
+              setShowResetConfirm(true);
+            }}
+            className="px-3.5 py-2 rounded-2xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold shrink-0 active:scale-95 transition-all flex items-center gap-1.5"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span>{isZh ? '格式化进度' : 'Reset All'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Reset Confirmation Modal */}
+      {showResetConfirm && (
+        <div className="fixed inset-0 z-50 bg-stone-950/70 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white w-full max-w-sm rounded-3xl border-2 border-rose-200 shadow-2xl overflow-hidden">
+            <div className="bg-gradient-to-r from-rose-600 to-rose-700 px-5 py-4 text-white flex items-center gap-3">
+              <div className="p-2 rounded-2xl bg-white/15 backdrop-blur-xs">
+                <AlertTriangle className="w-5 h-5 text-amber-200" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold font-serif">
+                  {isZh ? '确认格式化所有学习进度？' : 'Confirm Full Progress Reset?'}
+                </h3>
+                <p className="text-[11px] text-rose-100">
+                  {isZh ? '此操作不可撤销 (Tabula Rasa)' : 'This action cannot be undone (Tabula Rasa)'}
+                </p>
+              </div>
+            </div>
+
+            <div className="p-5 space-y-3">
+              <p className="text-xs text-stone-600 leading-relaxed">
+                {isZh
+                  ? '执行格式化后，以下数据将全部清零并恢复至初始未学习状态：'
+                  : 'Formatting will permanently clear the following data and return your account to a brand-new state:'}
+              </p>
+
+              <ul className="text-[11px] text-stone-700 bg-rose-50/60 border border-rose-100 rounded-2xl p-3 space-y-1.5">
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
+                  <span>
+                    {isZh
+                      ? `已通关课程 (${progress.completedLessons.length} 课) 与已解锁单元重置为第 1 单元`
+                      : `Completed lessons (${progress.completedLessons.length}) & unlocked units reset to Unit 1`}
+                  </span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
+                  <span>
+                    {isZh
+                      ? `骑士经验 (${progress.xp} XP)、段位封号与连胜 (${progress.streak} 天) 归零`
+                      : `Knight XP (${progress.xp} XP), rank title & streak (${progress.streak} days) reset to 0`}
+                  </span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
+                  <span>
+                    {isZh
+                      ? '词汇闪卡背诵进度、生词本及作家/伴读兔碎片全部重置'
+                      : 'Flashcard mastery, bookmarks, and author/rabbit shards reset'}
+                  </span>
+                </li>
+              </ul>
+
+              <div className="grid grid-cols-2 gap-2.5 pt-2">
+                <button
+                  onClick={() => {
+                    sound.playClick();
+                    setShowResetConfirm(false);
+                  }}
+                  className="py-2.5 px-4 rounded-2xl border border-stone-200 bg-stone-50 hover:bg-stone-100 text-stone-700 text-xs font-bold transition-colors"
+                >
+                  {isZh ? '取消保留' : 'Cancel'}
+                </button>
+                <button
+                  onClick={() => {
+                    sound.playClick();
+                    setShowResetConfirm(false);
+                    onResetProgress?.();
+                  }}
+                  className="py-2.5 px-4 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-sm active:scale-95 transition-all flex items-center justify-center gap-1.5"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>{isZh ? '确认一键清零' : 'Confirm Reset'}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+

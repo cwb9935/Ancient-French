@@ -172,6 +172,44 @@ class SoundEngine {
     this.playFanfare();
   }
 
+  // Cheerful medieval Estampie / Carole dance tune for the Grand Finale rabbit chorus
+  playGrandFinaleCarole() {
+    if (!this.soundEnabled) return;
+    try {
+      this.initCtx();
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime;
+      // Joyful medieval dance melody in C major / Mixolydian feel
+      const melody = [
+        { f: 523.25, t: 0.0, d: 0.16 },  // C5
+        { f: 659.25, t: 0.18, d: 0.16 }, // E5
+        { f: 783.99, t: 0.36, d: 0.16 }, // G5
+        { f: 659.25, t: 0.54, d: 0.16 }, // E5
+        { f: 880.0, t: 0.72, d: 0.22 },  // A5
+        { f: 783.99, t: 0.96, d: 0.22 }, // G5
+        { f: 659.25, t: 1.20, d: 0.16 }, // E5
+        { f: 783.99, t: 1.38, d: 0.16 }, // G5
+        { f: 1046.5, t: 1.56, d: 0.48 }, // C6
+      ];
+
+      melody.forEach(({ f, t, d }) => {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(f, now + t);
+        gain.gain.setValueAtTime(0.22, now + t);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + t + d);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now + t);
+        osc.stop(now + t + d);
+      });
+    } catch {
+      // Audio fallback silent
+    }
+  }
+
   // Pronounce Old French approximation via speech synthesis
   speakOldFrench(text: string) {
     if (typeof window === 'undefined' || !window.speechSynthesis) return;
@@ -189,3 +227,4 @@ class SoundEngine {
 }
 
 export const sound = new SoundEngine();
+
